@@ -1,0 +1,13 @@
+--- a/verl/utils/checkpoint/fsdp_checkpoint_manager.py
++++ b/verl/utils/checkpoint/fsdp_checkpoint_manager.py
+@@ -376,6 +376,10 @@
+                         )
+ 
+                 drop_tied_target_keys(state_dict, save_model, model_config)
++                state_dict = {
++                    name: tensor.to(dtype=torch.bfloat16) if tensor.is_floating_point() else tensor
++                    for name, tensor in state_dict.items()
++                }
+ 
+                 save_model.save_pretrained(hf_local_path, state_dict=state_dict)
+                 log_with_rank(
